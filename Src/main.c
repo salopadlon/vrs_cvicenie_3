@@ -72,25 +72,29 @@ int main(void)
 
 	//Set no pull for GPIOB pin 4
 	GPIOA_PUPDR_REG &= ~(0x3 << 8);
+	uint8_t state = 0;
 
   while (1)
   {
-	  if(!BUTTON_GET_STATE)
+
+	  if(edgeDetect(BUTTON_GET_STATE, 10) == RISE)
 	  {
-		  // 0.25s delay
-		  for(uint16_t i = 0; i < 0xFF00; i++){}
-		  LED_ON;
-		  // 0.25s delay
-		  for(uint16_t i = 0; i < 0xFF00; i++){}
-		  LED_OFF;
+		  state = 1;
 	  }
+
+	  if(edgeDetect(BUTTON_GET_STATE, 10) == FALL)
+	  {
+		  state = 0;
+	  }
+
+	  if(state == 1)
+	  {
+		  LED_ON;
+
+	  }
+
 	  else
 	  {
-		  // 1s delay
-		  for(uint32_t i = 0; i < 0xFFFF0; i++){}
-		  LED_ON;
-		  // 1s delay
-		  for(uint32_t i = 0; i < 0xFFFF0; i++){};
 		  LED_OFF;
 	  }
   }
@@ -98,6 +102,30 @@ int main(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples) {
+	uint8_t pin_state_old = pin_state;
+	uint8_t pin_state_new;
+	uint8_t i = 0;
+
+	while (i < samples) {
+		pin_state_new = BUTTON_GET_STATE;
+
+		if (pin_state_new == pin_state_old) {
+			return NONE;
+		}
+
+		i++;
+	}
+
+	if (pin_state_old == 0) {
+		return RISE;
+	}
+
+	else {
+		return FALL;
+	}
+}
 
 /* USER CODE END 4 */
 
