@@ -77,19 +77,15 @@ int main(void)
   while (1)
   {
 
-	  if(edgeDetect(BUTTON_GET_STATE, 200) == FALL)
-	  {
+	  if(edgeDetect(BUTTON_GET_STATE, 200) == FALL) {
 		  state = !state;
 	  }
 
-	  if(state)
-	  {
+	  if(state) {
 		  LED_ON;
-
 	  }
 
-	  else
-	  {
+	  else {
 		  LED_OFF;
 	  }
   }
