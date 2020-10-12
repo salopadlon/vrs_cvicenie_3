@@ -77,17 +77,12 @@ int main(void)
   while (1)
   {
 
-	  if(edgeDetect(BUTTON_GET_STATE, 10) == RISE)
+	  if(edgeDetect(BUTTON_GET_STATE, 200) == FALL)
 	  {
-		  state = 1;
+		  state = !state;
 	  }
 
-	  if(edgeDetect(BUTTON_GET_STATE, 10) == FALL)
-	  {
-		  state = 0;
-	  }
-
-	  if(state == 1)
+	  if(state)
 	  {
 		  LED_ON;
 
@@ -104,26 +99,32 @@ int main(void)
 /* USER CODE BEGIN 4 */
 
 EDGE_TYPE edgeDetect(uint8_t pin_state, uint8_t samples) {
-	uint8_t pin_state_old = pin_state;
-	uint8_t pin_state_new;
 	uint8_t i = 0;
+	uint8_t value = samples;
 
 	while (i < samples) {
-		pin_state_new = BUTTON_GET_STATE;
 
-		if (pin_state_new == pin_state_old) {
-			return NONE;
+		if (!BUTTON_GET_STATE) {
+			value--;
+		}
+
+		if (BUTTON_GET_STATE) {
+			value++;
 		}
 
 		i++;
 	}
 
-	if (pin_state_old == 0) {
+	if (value >= 0 && value <= 0.2*samples) {
+		return FALL;
+	}
+
+	else if (value >= 1.8*samples && value <= 2*samples) {
 		return RISE;
 	}
 
 	else {
-		return FALL;
+		return NONE;
 	}
 }
 
